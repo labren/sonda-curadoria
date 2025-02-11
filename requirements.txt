@@ -1,4 +1,4 @@
 ipython
-polars
+duckdb
 pandas
 pyarrow
