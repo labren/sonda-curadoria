@@ -1,0 +1,4 @@
+ipython
+polars
+pandas
+pyarrow
