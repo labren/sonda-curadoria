@@ -202,11 +202,11 @@ if __name__ == "__main__":
     dados_anemometricos = [arquivo for arquivo in dados_anemometricos if 'YYYY_MM' not in arquivo]
 
     # Processar os arquivos de dados meteorológicos
-    processar_arquivos(dados_metereologicos[0:10], BASE_METEOROLOGICO, linha_linha=False, var_var=False, sobreescrever=False)
+    processar_arquivos(dados_metereologicos, BASE_METEOROLOGICO, linha_linha=False, var_var=False, sobreescrever=False)
     # Processar os arquivos de dados solarimétricos
-    processar_arquivos(dados_solarimetricos[0:10], BASE_SOLARIMETRICA, linha_linha=False, var_var=False, sobreescrever=False)
+    processar_arquivos(dados_solarimetricos, BASE_SOLARIMETRICA, linha_linha=False, var_var=False, sobreescrever=False)
     # Processar os arquivos de dados anemométricos
-    processar_arquivos(dados_anemometricos[0:10], BASE_ANEMOMETRICO, linha_linha=False, var_var=False, sobreescrever=False)
+    processar_arquivos(dados_anemometricos, BASE_ANEMOMETRICO, linha_linha=False, var_var=False, sobreescrever=False)
 
     # Verificar se as tabelas têm dados antes de salvar
     count_meteorologico = con.execute(f"SELECT COUNT(*) FROM {BASE_METEOROLOGICO}").fetchone()[0]
