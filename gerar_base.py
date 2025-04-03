@@ -159,6 +159,7 @@ def processar_arquivos(arquivos, base, linha_linha, var_var, sobreescrever):
 
 if __name__ == "__main__":
 
+    ############ DECLARAÇÃO DE VARIÁVEIS ############
     # Diretório onde os arquivos estão localizados
     DIRETORIO = '/media/helvecioneto/Barracuda/sonda/novos_formatados/'
 
@@ -179,6 +180,8 @@ if __name__ == "__main__":
 
     ANEMO_VAR = "acronym","timestamp","year","day","min","ws10_avg","ws10_std","ws10_min","ws10_max","wd10_avg","wd10_std","ws25_avg","ws25_std","ws25_min","ws25_max","wd25_avg","wd25_std","tp_25","ws50_avg","ws50_std","ws50_min","ws50_max","wd50_avg","wd50_std","tp_50"
 
+
+    ############### CRIAÇÃO DAS BASES DE DADOS ##############
     # Criar a base de dados meteorológicos
     criar_base(ARQV_METEOROLOGICO, BASE_METEOROLOGICO, METEO_VAR)
     # Criar a base de dados solarimétricos
@@ -186,19 +189,13 @@ if __name__ == "__main__":
     # Criar a base de dados anemométricos
     criar_base(ARQV_ANEMOMETRICO, BASE_ANEMOMETRICO, ANEMO_VAR)
 
-    # listar todos os dados Meteorológicos usando o glob só para o tipo de arquivo .csv
-    dados_metereologicos = glob.glob(DIRETORIO + "*/Meteorologicos/**/*.csv", recursive=True)
-    # Remove arquivos que contenham 'YYYY_MM_MD_DQC'
-    dados_metereologicos = [arquivo for arquivo in dados_metereologicos if 'YYYY_MM' not in arquivo]
-
     # listar todos os dados de Solarimétricos usando o glob só para o tipo de arquivo .csv
+    # Remove arquivos que contenham 'YYYY_MM_MD_DQC'
+    dados_metereologicos = glob.glob(DIRETORIO + "*/Meteorologicos/**/*.csv", recursive=True)
+    dados_metereologicos = [arquivo for arquivo in dados_metereologicos if 'YYYY_MM' not in arquivo]
     dados_solarimetricos = glob.glob(DIRETORIO + "*/Solarimetricos/**/*.csv", recursive=True)
-    # Remove arquivos que contenham 'YYYY_MM_MD_DQC'
     dados_solarimetricos = [arquivo for arquivo in dados_solarimetricos if 'YYYY_MM' not in arquivo]
-
-    # listar todos os dados de Anemometricos usando o glob só para o tipo de arquivo .csv
     dados_anemometricos = glob.glob(DIRETORIO + "*/Anemometricos/**/*.csv", recursive=True)
-    # Remove arquivos que contenham 'YYYY_MM_MD_DQC'
     dados_anemometricos = [arquivo for arquivo in dados_anemometricos if 'YYYY_MM' not in arquivo]
 
     # Processar os arquivos de dados meteorológicos
