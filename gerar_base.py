@@ -161,7 +161,7 @@ if __name__ == "__main__":
 
     ############ DECLARAÇÃO DE VARIÁVEIS ############
     # Diretório onde os arquivos estão localizados
-    DIRETORIO = '/media/helvecioneto/Barracuda/sonda/novos_formatados/'
+    DIRETORIO = '/media/helvecioneto/Barracuda/sonda-formatados/'
 
     # Apontar o caminho das bases de dados
     ARQV_METEOROLOGICO = '/media/helvecioneto/Barracuda/sonda/dados_meteorologicos.parquet'
