@@ -17,6 +17,7 @@ Os dados da rede SONDA estão organizados em três categorias principais:
 
 ### 1. Análise Exploratória de Dados Solarimétricos
 Arquivo: 01_Analise_Exploratoria_Solarimetricos.ipynb
+[![Abrir no Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/labren/sonda-curadoria/blob/main/01_Analise_Exploratoria_Solarimetricos.ipynb)
 - Importação e visualização inicial dos dados solarimétricos
 - Análise temporal da disponibilidade de dados por estação
 - Visualização de séries temporais específicas (ex: estação BRB)
