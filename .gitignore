@@ -2,8 +2,10 @@
 __pycache__/
 *.py[cod]
 *$py.class
-
+*.parquet
+*.part
 *.out
+*.csv
 
 # C extensions
 *.so
