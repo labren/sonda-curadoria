@@ -8,8 +8,15 @@ ARQUIVO_PARQUET = 'Solarimetrica.parquet'
 ARQUIVO_ESTACOES = 'Tabela-estacao.csv'
 OUTPUT_WEB = 'output_web'
 
-# Configuração do logging error
-logging.basicConfig(level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
+# Configuração mais avançada para log em arquivo e console
+logging.basicConfig(
+    level=logging.ERROR,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('gerar_web.log'),
+        logging.StreamHandler()  # Para exibir no console também
+    ]
+)
 
 # Create database in file mode
 con = duckdb.connect()
