@@ -2,10 +2,14 @@ import duckdb
 import pandas as pd
 import pathlib
 import os
+import logging
 
 ARQUIVO_PARQUET = 'Solarimetrica.parquet'
 ARQUIVO_ESTACOES = 'Tabela-estacao.csv'
 OUTPUT_WEB = 'output_web'
+
+# Configuração do logging error
+logging.basicConfig(level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Create database in file mode
 con = duckdb.connect()
@@ -32,12 +36,12 @@ print(f"Encontradas {len(estacoes)} estações:")
 estacoes_df = pd.read_csv(ARQUIVO_ESTACOES)
 
 # Replace , with . in the 'lat', 'lon', and 'alt' columns
-estacoes_df['Latitude'] = estacoes_df['Latitude'].str.replace(',', '.')
-estacoes_df['Longitude'] = estacoes_df['Longitude'].str.replace(',', '.')
+# estacoes_df['Latitude'] = estacoes_df['Latitude'].str.replace(',', '.')
+# estacoes_df['Longitude'] = estacoes_df['Longitude'].str.replace(',', '.')
 # estacoes_df['Altitude'] = estacoes_df['Altitude'].str.replace(',', '.')
-estacoes_df['Latitude'] = estacoes_df['Latitude'].astype(float)
-estacoes_df['Longitude'] = estacoes_df['Longitude'].astype(float)
-estacoes_df['Altitude'] = estacoes_df['Altitude'].astype(float)
+# estacoes_df['Latitude'] = estacoes_df['Latitude'].astype(float)
+# estacoes_df['Longitude'] = estacoes_df['Longitude'].astype(float)
+# estacoes_df['Alt.(m)'] = estacoes_df['Alt.(m)'].astype(float)
 
 # Loop por cada estação
 for estacao_row in estacoes:
@@ -46,10 +50,17 @@ for estacao_row in estacoes:
 
     # Pega o nome da estação de estacoes_df
     estacao_info = estacoes_df[estacoes_df['Sigla'] == acronym]
-    nome_estacao = estacao_info['Nome'].values[0] if not estacao_info.empty else 'Desconhecida'
-    lat_estacao = estacao_info['Latitude'].values[0] if not estacao_info.empty else 'Desconhecida'
-    lon_estacao = estacao_info['Longitude'].values[0] if not estacao_info.empty else 'Desconhecida'
-    alt_estacao = estacao_info['Altitude'].values[0] if not estacao_info.empty else 'Desconhecida'
+    if estacao_info.empty:
+        nome_estacao = 'Desconhecida'
+        lat_estacao = 'Desconhecida'
+        lon_estacao = 'Desconhecida'
+        alt_estacao = 'Desconhecida'
+        logging.error(f"Informações da estação {acronym}, {estacao_row} não encontradas no arquivo {ARQUIVO_ESTACOES}.")
+    else:
+        nome_estacao = estacao_info['Sigla'].values[0]
+        lat_estacao = estacao_info['Latitude'].values[0]
+        lon_estacao = estacao_info['Longitude'].values[0]
+        alt_estacao = estacao_info['Alt.(m)'].values[0]
 
     # Criar MultiIndex com os nomes das colunas e unidades
     multi_columns = pd.MultiIndex.from_arrays([
@@ -91,7 +102,6 @@ for estacao_row in estacoes:
 
 
 print("Processamento concluído.")
-# Fechar a conexão com o banco de dados
 con.close()
 
 
