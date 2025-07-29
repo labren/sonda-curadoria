@@ -42,14 +42,6 @@ print(f"Encontradas {len(estacoes)} estações:")
 # Ler arquivo Tabela-estados.csv
 estacoes_df = pd.read_csv(ARQUIVO_ESTACOES)
 
-# Replace , with . in the 'lat', 'lon', and 'alt' columns
-# estacoes_df['Latitude'] = estacoes_df['Latitude'].str.replace(',', '.')
-# estacoes_df['Longitude'] = estacoes_df['Longitude'].str.replace(',', '.')
-# estacoes_df['Altitude'] = estacoes_df['Altitude'].str.replace(',', '.')
-# estacoes_df['Latitude'] = estacoes_df['Latitude'].astype(float)
-# estacoes_df['Longitude'] = estacoes_df['Longitude'].astype(float)
-# estacoes_df['Alt.(m)'] = estacoes_df['Alt.(m)'].astype(float)
-
 # Loop por cada estação
 for estacao_row in estacoes:
     acronym = estacao_row[0]
@@ -64,7 +56,7 @@ for estacao_row in estacoes:
         alt_estacao = 'Desconhecida'
         logging.error(f"Informações da estação {acronym}, {estacao_row} não encontradas no arquivo {ARQUIVO_ESTACOES}.")
     else:
-        nome_estacao = estacao_info['Sigla'].values[0]
+        nome_estacao = estacao_info['Estação'].values[0]
         lat_estacao = estacao_info['Latitude'].values[0]
         lon_estacao = estacao_info['Longitude'].values[0]
         alt_estacao = estacao_info['Alt.(m)'].values[0]
@@ -85,23 +77,37 @@ for estacao_row in estacoes:
     ORDER BY timestamp
     """
     df = con.execute(query).df()
-
-    # Agrupar por ano baseado na coluna 'year'
-    for year in df['year'].unique():
-        df_year = df[df['year'] == year]
-        df_year.columns = multi_columns
-        output_file = pathlib.Path(OUTPUT_WEB) / f"anual/Solarimetrico/{acronym}/{year}/{acronym}_{year}_SD"
+    
+    # Debug: comparar as duas abordagens
+    years_from_column = set(df['year'].dropna().unique())
+    df['timestamp'] = pd.to_datetime(df['timestamp'])
+    years_from_timestamp = set(df['timestamp'].dt.year.dropna().unique())
+    
+    if years_from_column != years_from_timestamp:
+        logging.warning(f"Estação {acronym}: Anos diferentes entre coluna year ({years_from_column}) e timestamp ({years_from_timestamp})")
+    
+    # Filtrar registros com timestamp válido
+    df = df.dropna(subset=['timestamp'])
+    
+    # Agrupar por ano baseado no timestamp (não na coluna year)
+    df_year_group = df.groupby(df['timestamp'].dt.year)
+    for year, group in df_year_group:
+        if pd.isna(year):
+            continue
+        group.columns = multi_columns
+        output_file = pathlib.Path(OUTPUT_WEB) / f"anual/Solarimetrico/{acronym}/{int(year)}/{acronym}_{int(year)}_SD"
         output_file.parent.mkdir(parents=True, exist_ok=True)
-        df_year.to_csv(output_file.with_suffix('.dat'), index=False)
+        group.to_csv(output_file.with_suffix('.dat'), index=False)
         os.system(f"zip -j {output_file}.zip {output_file.with_suffix('.dat')}")
         os.remove(output_file.with_suffix('.dat'))
 
-    # Agrupa por ano e mês
-    df['timestamp'] = pd.to_datetime(df['timestamp'])
+    # Agrupa por ano e mês (usando a mesma base de dados)
     df_year_month = df.groupby([df['timestamp'].dt.year, df['timestamp'].dt.month])
     for (year, month), group in df_year_month:
+        if pd.isna(year) or pd.isna(month):
+            continue
         group.columns = multi_columns
-        output_file = pathlib.Path(OUTPUT_WEB) / f"mensal/Solarimetrico/{acronym}/{year}/{acronym}_{year}_{str(month).zfill(2)}_SD"
+        output_file = pathlib.Path(OUTPUT_WEB) / f"mensal/Solarimetrico/{acronym}/{int(year)}/{acronym}_{int(year)}_{str(int(month)).zfill(2)}_SD"
         output_file.parent.mkdir(parents=True, exist_ok=True)
         group.to_csv(output_file.with_suffix('.dat'), index=False)
         os.system(f"zip -j {output_file}.zip {output_file.with_suffix('.dat')}")
